@@ -16,8 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create .love package
-        run: |
-          zip -9 -r 2048-SM64.love . -x ".git/*" ".github/*" "README.md" "task.md" "implementation_plan.md" "walkthrough.md"
+        run: Compress-Archive -Path main.lua, conf.lua, src -DestinationPath 2048-SM64.love
 
       - name: Build Windows Executable
         uses: love-actions/love-actions-windows@v1
@@ -29,7 +28,7 @@ jobs:
       - name: Zip Build Output
         run: |
           cd build
-          zip -r ../2048-SM64-Windows.zip *
+          Compress-Archive -Path * -DestinationPath ../2048-SM64-Windows.zip
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
