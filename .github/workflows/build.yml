@@ -1,0 +1,41 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .love package
+        run: |
+          zip -9 -r 2048-SM64.love . -x ".git/*" ".github/*" "README.md" "task.md" "implementation_plan.md" "walkthrough.md"
+
+      - name: Build Windows Executable
+        uses: love-actions/love-actions-windows@v1
+        with:
+          love-package: '2048-SM64.love'
+          product-name: '2048-SM64'
+          # Using default output folder: ./build
+
+      - name: Zip Build Output
+        run: |
+          cd build
+          zip -r ../2048-SM64-Windows.zip *
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          files: 2048-SM64-Windows.zip
+          draft: false
+          prerelease: false
